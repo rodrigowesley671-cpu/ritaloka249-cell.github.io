@@ -32,10 +32,10 @@
       background: #1db954;
       border: none;
       color: white;
-      padding: 12px 18px;
+      padding: 15px 20px;
       margin: 10px;
       font-size: 18px;
-      border-radius: 50px;
+      border-radius: 15px;
     }
 
     .barra {
@@ -45,7 +45,6 @@
       border-radius: 10px;
       margin: 15px 0;
       cursor: pointer;
-      position: relative;
     }
 
     .progresso {
@@ -67,7 +66,8 @@
 <body>
 
 <div class="player">
-  <h2 id="titulo">Fera Music 🎧</h2>
+
+  <h2>Fera Music 🎧</h2>
 
   <img id="capa" src="capa.JPG">
 
@@ -83,12 +83,17 @@
   <button onclick="tocar()">▶️</button>
   <button onclick="pausar()">⏸️</button>
 
-  <audio id="audio" src="musica.mp3"></audio>
+  <audio id="audio">
+    <source src="musica.mp3" type="audio/mpeg">
+  </audio>
+
 </div>
 
 <script>
-  var audio = document.getElementById("audio");
-  var progresso = document.getElementById("progresso");
+  const audio = document.getElementById("audio");
+  const progresso = document.getElementById("progresso");
+  const atual = document.getElementById("atual");
+  const duracao = document.getElementById("duracao");
 
   function tocar() {
     audio.play();
@@ -98,28 +103,30 @@
     audio.pause();
   }
 
-  audio.addEventListener("timeupdate", function () {
-    var porcentagem = (audio.currentTime / audio.duration) * 100;
-    progresso.style.width = porcentagem + "%";
-    document.getElementById("atual").innerText = formatar(audio.currentTime);
+  audio.addEventListener("loadedmetadata", () => {
+    duracao.textContent = formatar(audio.duration);
   });
 
-  audio.addEventListener("loadedmetadata", function () {
-    document.getElementById("duracao").innerText = formatar(audio.duration);
+  audio.addEventListener("timeupdate", () => {
+    if (audio.duration) {
+      const pct = (audio.currentTime / audio.duration) * 100;
+      progresso.style.width = pct + "%";
+      atual.textContent = formatar(audio.currentTime);
+    }
   });
 
-  function mudarTempo(event) {
-    var largura = event.currentTarget.clientWidth;
-    var clique = event.offsetX;
-    var porcentagem = clique / largura;
-    audio.currentTime = porcentagem * audio.duration;
+  function mudarTempo(e) {
+    const largura = e.currentTarget.clientWidth;
+    const clique = e.offsetX;
+    const pct = clique / largura;
+    audio.currentTime = pct * audio.duration;
   }
 
-  function formatar(segundos) {
-    var min = Math.floor(segundos / 60);
-    var seg = Math.floor(segundos % 60);
-    if (seg < 10) seg = "0" + seg;
-    return min + ":" + seg;
+  function formatar(s) {
+    const m = Math.floor(s / 60);
+    let ss = Math.floor(s % 60);
+    if (ss < 10) ss = "0" + ss;
+    return m + ":" + ss;
   }
 </script>
 

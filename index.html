@@ -3,6 +3,7 @@
 <head>
   <title>Fera Music</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       background: black;
@@ -12,6 +13,12 @@
       padding: 40px;
     }
 
+    img {
+      width: 250px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
     button {
       background: #1db954;
       color: white;
@@ -19,25 +26,36 @@
       padding: 15px 25px;
       font-size: 18px;
       border-radius: 10px;
+      margin: 10px;
     }
   </style>
 </head>
 
 <body>
 
-  <h1 id="titulo">Clique para tocar música</h1>
+  <h1>Fera Music 🎧</h1>
 
-  <button onclick="tocarMusica()" id="botao">Tocar música</button>
+  <!-- CAPA -->
+  <img src="capa.jpg" alt="Capa da música">
 
+  <br>
+
+  <!-- BOTÕES -->
+  <button onclick="tocar()">▶️ Tocar</button>
+  <button onclick="pausar()">⏸️ Pausar</button>
+
+  <!-- AUDIO -->
   <audio id="audio" src="musica.mp3"></audio>
 
   <script>
-    function tocarMusica() {
-      var musica = document.getElementById("audio");
-      musica.play();
+    var musica = document.getElementById("audio");
 
-      document.getElementById("botao").style.display = "none";
-      document.getElementById("titulo").innerText = "Agora está tocando 🎧";
+    function tocar() {
+      musica.play();
+    }
+
+    function pausar() {
+      musica.pause();
     }
   </script>
 

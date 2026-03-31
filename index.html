@@ -122,6 +122,44 @@
     var porcentagem = clique / largura;
     audio.currentTime = porcentagem * audio.duration;
   }
+<script>
+  var audio = document.getElementById("audio");
+  var progresso = document.getElementById("progresso");
+  var tempoAtual = document.getElementById("atual");
+  var tempoTotal = document.getElementById("duracao");
+
+  function tocar() {
+    audio.play();
+  }
+
+  function pausar() {
+    audio.pause();
+  }
+
+  audio.addEventListener("loadedmetadata", function () {
+    tempoTotal.innerText = formatar(audio.duration);
+  });
+
+  audio.addEventListener("timeupdate", function () {
+    var porcentagem = (audio.currentTime / audio.duration) * 100;
+    progresso.style.width = porcentagem + "%";
+    tempoAtual.innerText = formatar(audio.currentTime);
+  });
+
+  function formatar(segundos) {
+    if (isNaN(segundos)) return "0:00";
+    var min = Math.floor(segundos / 60);
+    var seg = Math.floor(segundos % 60);
+    if (seg < 10) seg = "0" + seg;
+    return min + ":" + seg;
+  }
+
+  function mudarTempo(event) {
+    var largura = event.currentTarget.clientWidth;
+    var clique = event.offsetX;
+    var porcentagem = clique / largura;
+    audio.currentTime = porcentagem * audio.duration;
+  }
 </script>
 
 </body>

@@ -27,7 +27,14 @@ border-radius:10px;
 <h1>🐯 Fera Music</h1>
 <p>Seu aplicativo de música ilimitada</p>
 
-<button>Tocar música</button>
+<button onclick="tocarMusica()">Tocar música</button>
 
+<audio id="player" src="musica.mp3"></audio>
+<script>
+function tocarMusica() {
+    var player = document.getElementById("player");
+    player.play();
+}
+</script>
 </body>
 </html>

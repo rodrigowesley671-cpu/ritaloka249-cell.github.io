@@ -26,6 +26,13 @@
       width: 100%;
       border-radius: 15px;
       margin-bottom: 20px;
+      animation: girar 6s linear infinite;
+      animation-play-state: paused;
+    }
+
+    @keyframes girar {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     button {
@@ -61,6 +68,17 @@
       font-size: 14px;
       color: #aaa;
     }
+
+    input[type=range] {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .playlist button {
+      width: 100%;
+      background: #282828;
+      margin: 5px 0;
+    }
   </style>
 </head>
 
@@ -68,9 +86,9 @@
 
 <div class="player">
 
-  <h2>Fera Music 🎧</h2>
+  <h2 id="titulo">Fera Music 🎧</h2>
 
-  <img src="capa.JPG">
+  <img id="capa" src="capa.JPG">
 
   <div class="barra" onclick="mudarTempo(event)">
     <div class="progresso" id="progresso"></div>
@@ -81,70 +99,65 @@
     <span id="duracao">0:00</span>
   </div>
 
+  <button onclick="anterior()">⏮️</button>
   <button onclick="tocar()">▶️</button>
   <button onclick="pausar()">⏸️</button>
+  <button onclick="proxima()">⏭️</button>
 
-  <audio id="audio" src="musica.mp3"></audio>
+  <input type="range" min="0" max="1" step="0.01" onchange="audio.volume = this.value">
+
+  <div class="playlist" id="playlist"></div>
+
+  <audio id="audio"></audio>
 
 </div>
 
 <script>
+  var musicas = [
+    {nome: "Música 1", arquivo: "musica.mp3", capa: "capa.JPG"},
+    {nome: "Música 2", arquivo: "musica2.mp3", capa: "capa2.JPG"}
+  ];
+
+  var indice = 0;
   var audio = document.getElementById("audio");
   var progresso = document.getElementById("progresso");
+  var img = document.getElementById("capa");
 
-  function tocar() {
-    audio.play();
+  function carregarMusica(i) {
+    audio.src = musicas[i].arquivo;
+    img.src = musicas[i].capa;
+    document.getElementById("titulo").innerText = musicas[i].nome;
+    audio.load();
+    tocar();
   }
 
-  function pausar() {
-    audio.pause();
+  function tocar() { audio.play(); }
+  function pausar() { audio.pause(); }
+
+  function proxima() {
+    indice = (indice + 1) % musicas.length;
+    carregarMusica(indice);
   }
 
-  audio.addEventListener("timeupdate", function () {
-    var porcentagem = (audio.currentTime / audio.duration) * 100;
-    progresso.style.width = porcentagem + "%";
-
-    document.getElementById("atual").innerText = formatar(audio.currentTime);
-    document.getElementById("duracao").innerText = formatar(audio.duration);
-  });
-
-  function formatar(segundos) {
-    if (isNaN(segundos)) return "0:00";
-    var min = Math.floor(segundos / 60);
-    var seg = Math.floor(segundos % 60);
-    if (seg < 10) seg = "0" + seg;
-    return min + ":" + seg;
-  }
-
-  function mudarTempo(event) {
-    var largura = event.currentTarget.clientWidth;
-    var clique = event.offsetX;
-    var porcentagem = clique / largura;
-    audio.currentTime = porcentagem * audio.duration;
-  }
-<script>
-  var audio = document.getElementById("audio");
-  var progresso = document.getElementById("progresso");
-  var tempoAtual = document.getElementById("atual");
-  var tempoTotal = document.getElementById("duracao");
-
-  function tocar() {
-    audio.play();
-  }
-
-  function pausar() {
-    audio.pause();
+  function anterior() {
+    indice = (indice - 1 + musicas.length) % musicas.length;
+    carregarMusica(indice);
   }
 
   audio.addEventListener("loadedmetadata", function () {
-    tempoTotal.innerText = formatar(audio.duration);
+    document.getElementById("duracao").innerText = formatar(audio.duration);
   });
 
   audio.addEventListener("timeupdate", function () {
     var porcentagem = (audio.currentTime / audio.duration) * 100;
     progresso.style.width = porcentagem + "%";
-    tempoAtual.innerText = formatar(audio.currentTime);
+    document.getElementById("atual").innerText = formatar(audio.currentTime);
   });
+
+  audio.addEventListener("ended", proxima);
+
+  audio.addEventListener("play", () => img.style.animationPlayState = "running");
+  audio.addEventListener("pause", () => img.style.animationPlayState = "paused");
 
   function formatar(segundos) {
     if (isNaN(segundos)) return "0:00";
@@ -160,6 +173,22 @@
     var porcentagem = clique / largura;
     audio.currentTime = porcentagem * audio.duration;
   }
+
+  function montarPlaylist() {
+    var lista = document.getElementById("playlist");
+    musicas.forEach((m, i) => {
+      var btn = document.createElement("button");
+      btn.innerText = m.nome;
+      btn.onclick = () => {
+        indice = i;
+        carregarMusica(i);
+      };
+      lista.appendChild(btn);
+    });
+  }
+
+  montarPlaylist();
+  carregarMusica(indice);
 </script>
 
 </body>

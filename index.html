@@ -6,96 +6,82 @@
 
   <style>
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: white;
-      overflow: hidden;
-    }
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: white;
+  overflow: hidden;
+}
 
-    .bg {
-      position: fixed;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      filter: blur(20px) brightness(40%);
-      transform: scale(1.2);
-    }
+.bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(20px) brightness(40%);
+  transform: scale(1.2);
+}
 
-    .player {
-      position: relative;
-      z-index: 2;
-      padding: 30px;
-      text-align: center;
-    }
+.player {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 30px;
+}
 
-    .capa {
-      width: 80%;
-      max-width: 300px;
-      border-radius: 15px;
-      margin-top: 60px;
-    }
+.capa {
+  width: 80%;
+  max-width: 300px;
+  border-radius: 15px;
+  margin-top: 60px;
+}
 
-    .titulo {
-      margin-top: 20px;
-      font-size: 24px;
-      font-weight: bold;
-    }
+.titulo {
+  margin-top: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
 
-    .artista {
-      color: #ccc;
-      margin-bottom: 20px;
-    }
+.artista {
+  color: #ccc;
+  margin-bottom: 20px;
+}
 
-    .barra {
-      width: 90%;
-      height: 5px;
-      background: rgba(255,255,255,0.3);
-      border-radius: 10px;
-      margin: 20px auto;
-      cursor: pointer;
-      position: relative;
-    }
+.barra {
+  width: 90%;
+  height: 5px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  margin: 20px auto;
+  cursor: pointer;
+}
 
-    .progresso {
-      height: 100%;
-      width: 0%;
-      background: white;
-      border-radius: 10px;
-    }
+.progresso {
+  height: 100%;
+  width: 0%;
+  background: white;
+}
 
-    .tempo {
-      width: 90%;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: #ccc;
-    }
+.tempo {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #ccc;
+}
 
-    .controles {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 40px;
-    }
+.controles {
+  margin-top: 20px;
+}
 
-    .btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 30px;
-    }
-
-    .play {
-      background: white;
-      color: black;
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      font-size: 30px;
-    }
+.play {
+  background: white;
+  color: black;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+}
   </style>
 </head>
 
@@ -105,10 +91,10 @@
 
 <div class="player">
 
-  <img id="capa" class="capa" src="capa.JPG">
+  <img id="capa" class="capa">
 
-  <div class="titulo" id="titulo">Nome da Música</div>
-  <div class="artista" id="artista">Artista</div>
+  <div class="titulo" id="titulo"></div>
+  <div class="artista" id="artista"></div>
 
   <div class="barra" onclick="mudarTempo(event)">
     <div class="progresso" id="progresso"></div>
@@ -120,14 +106,17 @@
   </div>
 
   <div class="controles">
-    <button class="btn" onclick="anterior()">⏮</button>
-    <button class="btn play" onclick="toggle()">▶</button>
-    <button class="btn" onclick="proxima()">⏭</button>
+    <button onclick="anterior()">⏮</button>
+    <button class="play" onclick="toggle()">▶</button>
+    <button onclick="proxima()">⏭</button>
   </div>
 
   <audio id="audio"></audio>
 
 </div>
+
+
+
 
 <script>
   var musicas = [
@@ -143,14 +132,11 @@
   var audio = document.getElementById("audio");
 
   function carregar(i) {
-    var m = musicas[i];
-    audio.src = m.arquivo;
-    document.getElementById("capa").src = m.capa;
-    document.getElementById("bg").style.backgroundImage = "url(" + m.capa + ")";
-    document.getElementById("titulo").innerText = m.nome;
-    document.getElementById("artista").innerText = m.artista;
-    audio.load();
-  }
+  var m = musicas[i];
+  audio.src = m.arquivo;
+  atualizarUI(m);
+  audio.load();
+}
 
   function toggle() {
     if (audio.paused) audio.play();
@@ -192,9 +178,13 @@
     if (ss < 10) ss = "0" + ss;
     return m + ":" + ss;
   }
-
+function atualizarUI(m) {
+  document.getElementById("capa").src = m.capa;
+  document.getElementById("bg").style.backgroundImage = "url(" + m.capa + ")";
+  document.getElementById("titulo").innerText = m.nome;
+  document.getElementById("artista").innerText = m.artista;
+}
   carregar(0);
 </script>
-
 </body>
 </html>

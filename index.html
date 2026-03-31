@@ -1,40 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Fera Music</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-body{
-background:black;
-color:white;
-font-family:Arial;
-text-align:center;
-padding:40px;
-}
-button{
-background:#1db954;
-color:white;
-border:none;
-padding:15px 25px;
-font-size:18px;
-border-radius:10px;
-}
-</style>
+  <title>Fera Music</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: black;
+      color: white;
+      font-family: Arial;
+      text-align: center;
+      padding: 40px;
+    }
+
+    button {
+      background: #1db954;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      font-size: 18px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 
 <body>
 
-<h1>🐯 Fera Music</h1>
-<p>Seu aplicativo de música ilimitada</p>
+  <h1 id="titulo">Clique para tocar música</h1>
 
-<button onclick="tocarMusica()">Tocar música</button>
+  <button onclick="tocarMusica()" id="botao">Tocar música</button>
 
-<audio id="player" src="musica.mp3"></audio>
-<script>
-function tocarMusica() {
-    var player = document.getElementById("player");
-    player.play();
-}
-</script>
+  <audio id="audio" src="musica.mp3"></audio>
+
+  <script>
+    function tocarMusica() {
+      var musica = document.getElementById("audio");
+      musica.play();
+
+      document.getElementById("botao").style.display = "none";
+      document.getElementById("titulo").innerText = "Agora está tocando 🎧";
+    }
+  </script>
+
 </body>
 </html>

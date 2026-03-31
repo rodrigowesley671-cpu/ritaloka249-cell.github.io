@@ -1,94 +1,114 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Fera Music</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fera Music</title>
 
   <style>
     body {
-      background: #121212;
-      color: white;
+      margin: 0;
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 30px;
+      color: white;
+      overflow: hidden;
+    }
+
+    .bg {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      filter: blur(20px) brightness(40%);
+      transform: scale(1.2);
     }
 
     .player {
-      background: #181818;
-      padding: 20px;
-      border-radius: 20px;
-      max-width: 400px;
-      margin: auto;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      position: relative;
+      z-index: 2;
+      padding: 30px;
+      text-align: center;
     }
 
-    img {
-      width: 100%;
+    .capa {
+      width: 80%;
+      max-width: 300px;
       border-radius: 15px;
+      margin-top: 60px;
+    }
+
+    .titulo {
+      margin-top: 20px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .artista {
+      color: #ccc;
       margin-bottom: 20px;
-      animation: girar 6s linear infinite;
-      animation-play-state: paused;
-    }
-
-    @keyframes girar {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    button {
-      background: #1db954;
-      border: none;
-      color: white;
-      padding: 12px 18px;
-      margin: 10px;
-      font-size: 18px;
-      border-radius: 50px;
     }
 
     .barra {
-      width: 100%;
-      height: 8px;
-      background: #404040;
+      width: 90%;
+      height: 5px;
+      background: rgba(255,255,255,0.3);
       border-radius: 10px;
-      margin: 15px 0;
+      margin: 20px auto;
       cursor: pointer;
       position: relative;
     }
 
     .progresso {
       height: 100%;
-      background: #1db954;
       width: 0%;
+      background: white;
       border-radius: 10px;
     }
 
     .tempo {
+      width: 90%;
+      margin: auto;
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
-      color: #aaa;
+      font-size: 12px;
+      color: #ccc;
     }
 
-    input[type=range] {
-      width: 100%;
-      margin-top: 10px;
+    .controles {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
     }
 
-    .playlist button {
-      width: 100%;
-      background: #282828;
-      margin: 5px 0;
+    .btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 30px;
+    }
+
+    .play {
+      background: white;
+      color: black;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      font-size: 30px;
     }
   </style>
 </head>
 
 <body>
 
+<div class="bg" id="bg"></div>
+
 <div class="player">
 
-  <h2 id="titulo">Fera Music 🎧</h2>
+  <img id="capa" class="capa" src="capa.JPG">
 
-  <img id="capa" src="capa.JPG">
+  <div class="titulo" id="titulo">Nome da Música</div>
+  <div class="artista" id="artista">Artista</div>
 
   <div class="barra" onclick="mudarTempo(event)">
     <div class="progresso" id="progresso"></div>
@@ -99,14 +119,11 @@
     <span id="duracao">0:00</span>
   </div>
 
-  <button onclick="anterior()">⏮️</button>
-  <button onclick="tocar()">▶️</button>
-  <button onclick="pausar()">⏸️</button>
-  <button onclick="proxima()">⏭️</button>
-
-  <input type="range" min="0" max="1" step="0.01" onchange="audio.volume = this.value">
-
-  <div class="playlist" id="playlist"></div>
+  <div class="controles">
+    <button class="btn" onclick="anterior()">⏮</button>
+    <button class="btn play" onclick="toggle()">▶</button>
+    <button class="btn" onclick="proxima()">⏭</button>
+  </div>
 
   <audio id="audio"></audio>
 
@@ -114,81 +131,69 @@
 
 <script>
   var musicas = [
-    {nome: "Música 1", arquivo: "musica.mp3", capa: "capa.JPG"},
-    {nome: "Música 2", arquivo: "musica2.mp3", capa: "capa2.JPG"}
+    {
+      nome: "Tropa do Mais Novo",
+      artista: "DJ Biel, Vulgo FK",
+      arquivo: "musica.mp3",
+      capa: "capa.JPG"
+    }
   ];
 
   var indice = 0;
   var audio = document.getElementById("audio");
-  var progresso = document.getElementById("progresso");
-  var img = document.getElementById("capa");
 
-  function carregarMusica(i) {
-    audio.src = musicas[i].arquivo;
-    img.src = musicas[i].capa;
-    document.getElementById("titulo").innerText = musicas[i].nome;
+  function carregar(i) {
+    var m = musicas[i];
+    audio.src = m.arquivo;
+    document.getElementById("capa").src = m.capa;
+    document.getElementById("bg").style.backgroundImage = "url(" + m.capa + ")";
+    document.getElementById("titulo").innerText = m.nome;
+    document.getElementById("artista").innerText = m.artista;
     audio.load();
-    tocar();
   }
 
-  function tocar() { audio.play(); }
-  function pausar() { audio.pause(); }
+  function toggle() {
+    if (audio.paused) audio.play();
+    else audio.pause();
+  }
 
   function proxima() {
     indice = (indice + 1) % musicas.length;
-    carregarMusica(indice);
+    carregar(indice);
+    audio.play();
   }
 
   function anterior() {
     indice = (indice - 1 + musicas.length) % musicas.length;
-    carregarMusica(indice);
+    carregar(indice);
+    audio.play();
   }
+
+  audio.addEventListener("timeupdate", function () {
+    var p = (audio.currentTime / audio.duration) * 100;
+    document.getElementById("progresso").style.width = p + "%";
+    document.getElementById("atual").innerText = formatar(audio.currentTime);
+  });
 
   audio.addEventListener("loadedmetadata", function () {
     document.getElementById("duracao").innerText = formatar(audio.duration);
   });
 
-  audio.addEventListener("timeupdate", function () {
-    var porcentagem = (audio.currentTime / audio.duration) * 100;
-    progresso.style.width = porcentagem + "%";
-    document.getElementById("atual").innerText = formatar(audio.currentTime);
-  });
-
-  audio.addEventListener("ended", proxima);
-
-  audio.addEventListener("play", () => img.style.animationPlayState = "running");
-  audio.addEventListener("pause", () => img.style.animationPlayState = "paused");
-
-  function formatar(segundos) {
-    if (isNaN(segundos)) return "0:00";
-    var min = Math.floor(segundos / 60);
-    var seg = Math.floor(segundos % 60);
-    if (seg < 10) seg = "0" + seg;
-    return min + ":" + seg;
+  function mudarTempo(e) {
+    var barra = e.currentTarget;
+    var x = e.offsetX;
+    var pct = x / barra.clientWidth;
+    audio.currentTime = pct * audio.duration;
   }
 
-  function mudarTempo(event) {
-    var largura = event.currentTarget.clientWidth;
-    var clique = event.offsetX;
-    var porcentagem = clique / largura;
-    audio.currentTime = porcentagem * audio.duration;
+  function formatar(s) {
+    var m = Math.floor(s / 60);
+    var ss = Math.floor(s % 60);
+    if (ss < 10) ss = "0" + ss;
+    return m + ":" + ss;
   }
 
-  function montarPlaylist() {
-    var lista = document.getElementById("playlist");
-    musicas.forEach((m, i) => {
-      var btn = document.createElement("button");
-      btn.innerText = m.nome;
-      btn.onclick = () => {
-        indice = i;
-        carregarMusica(i);
-      };
-      lista.appendChild(btn);
-    });
-  }
-
-  montarPlaylist();
-  carregarMusica(indice);
+  carregar(0);
 </script>
 
 </body>

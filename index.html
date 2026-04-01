@@ -80,9 +80,10 @@
     <span id="duracao">0:00</span>
   </div>
 
-  <button onclick="tocar()">▶️</button>
-  <button onclick="pausar()">⏸️</button>
-
+<button onclick="anterior()">⏮️</button>
+<button onclick="tocar()">▶️</button>
+<button onclick="pausar()">⏸️</button>
+<button onclick="proxima()">⏭️</button>
   <audio id="audio">
     <source src="musica.mp3" type="audio/mpeg">
   </audio>
@@ -91,6 +92,13 @@
 
 <script>
   const audio = document.getElementById("audio");
+
+const musicas = [
+  {arquivo: "musica.mp3", capa: "capa.JPG"},
+  {arquivo: "musica2.mp3", capa: "capa2.JPG"}
+];
+
+let indice = 0;
   const progresso = document.getElementById("progresso");
   const atual = document.getElementById("atual");
   const duracao = document.getElementById("duracao");
@@ -102,7 +110,23 @@
   function pausar() {
     audio.pause();
   }
+function carregarMusica() {
+  audio.src = musicas[indice].arquivo;
+  document.getElementById("capa").src = musicas[indice].capa;
+  audio.load();
+}
 
+function proxima() {
+  indice = (indice + 1) % musicas.length;
+  carregarMusica();
+  audio.play();
+}
+
+function anterior() {
+  indice = (indice - 1 + musicas.length) % musicas.length;
+  carregarMusica();
+  audio.play();
+}
   audio.addEventListener("loadedmetadata", () => {
     duracao.textContent = formatar(audio.duration);
   });
@@ -128,6 +152,7 @@
     if (ss < 10) ss = "0" + ss;
     return m + ":" + ss;
   }
+  carregarMusica();
 </script>
 
 </body>

@@ -1,26 +1,54 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <title>Fera Music</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Fera Music</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-  background: #0b0b0b;
+<style>
+body {
+  margin: 0;
   font-family: Arial, sans-serif;
+  background: #000;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  overflow: hidden;
+}
+
+/* Fundo com blur igual player moderno */
+#bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) brightness(0.4);
+  z-index: -1;
 }
 
 .player {
-  background: #181818;
-  padding: 20px;
+  background: rgba(24,24,24,0.9);
+  backdrop-filter: blur(10px);
+  padding: 25px;
   border-radius: 20px;
-  width: 320px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.6);
+  width: 340px;
   text-align: center;
+  box-shadow: 0 0 40px rgba(0,0,0,0.9);
+}
+
+.titulo {
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.musica {
+  color: #1db954;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .player img {
@@ -29,18 +57,12 @@
   margin-bottom: 15px;
 }
 
-.titulo {
-  color: white;
-  font-size: 20px;
-  margin-bottom: 10px;
-}
-
 .barra {
-  background: #404040;
+  background: #555;
   height: 6px;
   border-radius: 10px;
+  margin: 15px 0;
   cursor: pointer;
-  margin: 10px 0;
   position: relative;
 }
 
@@ -54,34 +76,51 @@
 .tempo {
   display: flex;
   justify-content: space-between;
-  color: #b3b3b3;
+  color: #ccc;
   font-size: 12px;
 }
 
 .controles {
-  margin-top: 15px;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
 
 .controles button {
-  background: #1db954;
+  background: #2a2a2a;
   border: none;
   color: white;
   font-size: 18px;
-  margin: 5px;
-  padding: 12px 16px;
   border-radius: 50%;
+  width: 50px;
+  height: 50px;
   cursor: pointer;
 }
-  </style>
+
+.play {
+  background: #1db954;
+  width: 65px;
+  height: 65px;
+  font-size: 22px;
+}
+
+.controles button:hover {
+  transform: scale(1.1);
+}
+</style>
 </head>
 
 <body>
 
+<div id="bg"></div>
+
 <div class="player">
+  <div class="titulo">Fera Music 🎧</div>
+  <div class="musica" id="nome">Nome da Música</div>
 
-  <h2>Fera Music 🎧</h2>
-
-  <img id="capa" src="capa.JPG">
+  <img id="capa" src="capa.jpg">
 
   <div class="barra" onclick="mudarTempo(event)">
     <div class="progresso" id="progresso"></div>
@@ -92,40 +131,55 @@
     <span id="duracao">0:00</span>
   </div>
 
-<button onclick="anterior()">⏮️</button>
-<button onclick="tocar()">▶️</button>
-<button onclick="pausar()">⏸️</button>
-<button onclick="proxima()">⏭️</button>
-  <audio id="audio">
-    <source src="musica.mp3" type="audio/mpeg">
-  </audio>
-
+  <div class="controles">
+    <button onclick="anterior()">⏮</button>
+    <button class="play" onclick="tocar()">▶</button>
+    <button onclick="pausar()">⏸</button>
+    <button onclick="proxima()">⏭</button>
+  </div>
 </div>
 
+<audio id="audio"></audio>
+
 <script>
-  const audio = document.getElementById("audio");
+const audio = document.getElementById("audio");
+const progresso = document.getElementById("progresso");
+const atual = document.getElementById("atual");
+const duracao = document.getElementById("duracao");
+const capa = document.getElementById("capa");
+const bg = document.getElementById("bg");
+const nome = document.getElementById("nome");
 
 const musicas = [
-  {arquivo: "musica.mp3", capa: "capa.JPG"},
-  {arquivo: "musica2.mp3", capa: "capa2.JPG"}
+  {
+    nome: "Famoso JMA",
+    arquivo: "musica.mp3",
+    capa: "capa.jpg"
+  },
+  {
+    nome: "Outra Música",
+    arquivo: "musica2.mp3",
+    capa: "capa2.jpg"
+  }
 ];
 
 let indice = 0;
-  const progresso = document.getElementById("progresso");
-  const atual = document.getElementById("atual");
-  const duracao = document.getElementById("duracao");
 
-  function tocar() {
-    audio.play();
-  }
-
-  function pausar() {
-    audio.pause();
-  }
 function carregarMusica() {
-  audio.src = musicas[indice].arquivo;
-  document.getElementById("capa").src = musicas[indice].capa;
+  const m = musicas[indice];
+  audio.src = m.arquivo;
+  capa.src = m.capa;
+  bg.style.backgroundImage = `url(${m.capa})`;
+  nome.textContent = m.nome;
   audio.load();
+}
+
+function tocar() {
+  audio.play();
+}
+
+function pausar() {
+  audio.pause();
 }
 
 function proxima() {
@@ -139,32 +193,34 @@ function anterior() {
   carregarMusica();
   audio.play();
 }
-  audio.addEventListener("loadedmetadata", () => {
-    duracao.textContent = formatar(audio.duration);
-  });
 
-  audio.addEventListener("timeupdate", () => {
-    if (audio.duration) {
-      const pct = (audio.currentTime / audio.duration) * 100;
-      progresso.style.width = pct + "%";
-      atual.textContent = formatar(audio.currentTime);
-    }
-  });
+audio.addEventListener("loadedmetadata", () => {
+  duracao.textContent = formatar(audio.duration);
+});
 
-  function mudarTempo(e) {
-    const largura = e.currentTarget.clientWidth;
-    const clique = e.offsetX;
-    const pct = clique / largura;
-    audio.currentTime = pct * audio.duration;
+audio.addEventListener("timeupdate", () => {
+  if (audio.duration) {
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progresso.style.width = pct + "%";
+    atual.textContent = formatar(audio.currentTime);
   }
+});
 
-  function formatar(s) {
-    const m = Math.floor(s / 60);
-    let ss = Math.floor(s % 60);
-    if (ss < 10) ss = "0" + ss;
-    return m + ":" + ss;
-  }
-  carregarMusica();
+function mudarTempo(e) {
+  const largura = e.currentTarget.clientWidth;
+  const clique = e.offsetX;
+  const pct = clique / largura;
+  audio.currentTime = pct * audio.duration;
+}
+
+function formatar(s) {
+  const m = Math.floor(s / 60);
+  let ss = Math.floor(s % 60);
+  if (ss < 10) ss = "0" + ss;
+  return m + ":" + ss;
+}
+
+carregarMusica();
 </script>
 
 </body>
